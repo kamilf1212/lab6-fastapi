@@ -1,0 +1,23 @@
+name: lab6_fastapi
+on: workflow_dispatch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name:  install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+
+      - name: test
+        run: pytest test
