@@ -12,6 +12,9 @@ jobs:
       run: |
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
+    - name: Create timestamp
+      run: echo "TS=$(date +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
+
     - name: Build and push image
       run: |
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/python-app:latest .
