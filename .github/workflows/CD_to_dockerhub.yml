@@ -6,16 +6,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Create timestamp
+      run: echo "TS=$(date +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
+    
     - uses: actions/checkout@v4
 
     - name: Login to Docker Hub
       run: |
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-    - name: Create timestamp
-      run: echo "TS=$(date +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
-
-    - name: Build and push image
+    - name: Build image
       run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/python-app:latest .
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/python-app:${{env.TS}}
+        IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/python-app
+        docker build -t $IMAGE:latest .
+    
+    - name: Tag image with timestamp
+      run: |
+        IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/python-app
+        docker tag $IMAGE:latest $IMAGE:${{ env.TS }}
+    
+    - name: Push images
+      run: |
+        IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/python-app
+        docker push $IMAGE:latest
+        docker push $IMAGE:${{ env.TS }}
